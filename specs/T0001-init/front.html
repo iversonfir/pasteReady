@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>貼上就轉｜文字、日期、名單與社群格式工具箱</title>
+  <meta name="description" content="貼上文字、名單或日期，一鍵整理成適合 LINE、Instagram、Threads、Facebook、LinkedIn 的格式。支援字數檢查、Emoji 文案、日期倒數與個資遮罩。" />
+  <style>
+    :root {
+      --bg: #fbf7ef;
+      --surface: #fffdf8;
+      --surface-2: #f5ead8;
+      --ink: #2d251c;
+      --muted: #7a6b5c;
+      --line: #e9dcc8;
+      --brand: #e78336;
+      --brand-2: #f4b65f;
+      --brand-dark: #9a4f19;
+      --green: #4f8f63;
+      --red: #c65a45;
+      --shadow: 0 22px 60px rgba(82, 52, 24, 0.13);
+      --radius-xl: 28px;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --max: 1180px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(247, 187, 105, .32), transparent 28%),
+        radial-gradient(circle at 88% 8%, rgba(231, 131, 54, .18), transparent 30%),
+        linear-gradient(180deg, #fff8ec 0%, var(--bg) 46%, #fffdf8 100%);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(255, 250, 241, .82);
+      border-bottom: 1px solid rgba(233, 220, 200, .8);
+    }
+
+    .nav {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 10px 28px rgba(231, 131, 54, .28);
+      color: white;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      padding: 9px 12px;
+      border-radius: 999px;
+    }
+
+    .nav-links a:hover { background: rgba(231, 131, 54, .1); color: var(--brand-dark); }
+
+    .hero {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 54px 22px 22px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(231, 131, 54, .1);
+      color: var(--brand-dark);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(38px, 6vw, 76px);
+      line-height: .98;
+      letter-spacing: -.06em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.9;
+      max-width: 640px;
+    }
+
+    .hero-actions {
+      margin-top: 26px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-weight: 800;
+      font-size: 15px;
+      font-family: inherit;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white;
+      box-shadow: 0 16px 32px rgba(231, 131, 54, .28);
+    }
+
+    .btn-soft {
+      background: #fff;
+      color: var(--brand-dark);
+      border: 1px solid var(--line);
+    }
+
+    .hero-card {
+      background: rgba(255, 253, 248, .85);
+      border: 1px solid rgba(233, 220, 200, .9);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      transform: rotate(1deg);
+    }
+
+    .mini-window {
+      border-radius: 22px;
+      background: #fff;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .window-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fffaf1;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #ed8b71; }
+    .dot:nth-child(2) { background: #eeb94e; }
+    .dot:nth-child(3) { background: #7dbc76; }
+
+    .demo-text {
+      padding: 18px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .demo-result {
+      margin: 0 18px 18px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #fff4df;
+      border: 1px dashed #efc17e;
+      font-weight: 700;
+      line-height: 1.8;
+    }
+
+    .stats {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 10px 22px 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,.64);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .stat-card b { display: block; font-size: 24px; }
+    .stat-card span { color: var(--muted); font-size: 13px; }
+
+    .section {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 22px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -.03em;
+    }
+
+    .section-title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .tool-chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      border-radius: 18px;
+      padding: 14px;
+      cursor: pointer;
+      min-height: 94px;
+      transition: all .15s ease;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .tool-chip:hover, .tool-chip.active {
+      background: #fff;
+      border-color: rgba(231, 131, 54, .55);
+      box-shadow: 0 12px 28px rgba(82, 52, 24, .08);
+      transform: translateY(-1px);
+    }
+
+    .tool-chip .icon { font-size: 24px; display: block; margin-bottom: 8px; }
+    .tool-chip b { display: block; font-size: 14px; margin-bottom: 4px; }
+    .tool-chip small { color: var(--muted); line-height: 1.5; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 253, 248, .9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      background: rgba(255,250,241,.8);
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .panel-head small { color: var(--muted); }
+
+    .panel-body { padding: 20px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      font: inherit;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 16px;
+      padding: 13px 14px;
+      outline: none;
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+      line-height: 1.75;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: rgba(231, 131, 54, .75);
+      box-shadow: 0 0 0 4px rgba(231, 131, 54, .12);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .small-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .small-btn:hover { border-color: var(--brand-2); color: var(--brand-dark); }
+
+    .result-box {
+      min-height: 260px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: #fffaf1;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .metric b { display: block; font-size: 22px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+
+    .limit-bar {
+      height: 10px;
+      background: #f0e2cf;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .limit-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--brand-2));
+      border-radius: 999px;
+      transition: width .2s ease;
+    }
+
+    .templates {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .template-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.72);
+      padding: 16px;
+    }
+
+    .template-card b { display: block; margin-bottom: 6px; }
+    .template-card p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 14px; }
+
+    .ad-placeholder {
+      border: 1px dashed #d7c2a4;
+      background: rgba(255,255,255,.55);
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      margin-top: 18px;
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 36px;
+      border-top: 1px solid var(--line);
+      padding: 28px 22px 40px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 960px) {
+      .hero, .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card { transform: none; }
+
+      .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .tools-grid, .templates, .metric-grid, .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      h1 { font-size: 42px; }
+
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="#">
+        <span class="logo-mark">轉</span>
+        <span>貼上就轉</span>
+      </a>
+      <div class="nav-links">
+        <a href="#tools">工具</a>
+        <a href="#workspace">試用</a>
+        <a href="#seo">SEO頁面</a>
+        <a href="#about">關於</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="pill">✨ 給小編、行政、活動主辦的格式工具箱</span>
+        <h1>把亂掉的文字，變成可以直接貼出去的樣子。</h1>
+        <p>
+          貼上文案、名單、電話或日期，一鍵整理成 LINE、IG、Threads、Facebook、LinkedIn 可用格式。
+          先不用 AI，也能做出每天都有人會用的小工具。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#workspace">馬上試用原型</a>
+          <a class="btn btn-soft" href="#tools">查看工具清單</a>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div class="mini-window">
+          <div class="window-top">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+          <div class="demo-text">
+            原文：明天晚上八點直播 會分享新手如何開始做副業 歡迎大家來聽
+          </div>
+          <div class="demo-result">
+            ✨ 明晚 8:00 直播 ✨<br><br>
+            這次會分享：<br>
+            ➜ 新手如何開始做副業<br>
+            ➜ 從 0 到 1 的第一步<br><br>
+            有興趣的朋友，歡迎一起來聽 🙌
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="stats">
+      <div class="stat-card"><b>6</b><span>MVP 核心工具</span></div>
+      <div class="stat-card"><b>0</b><span>第一版不需要登入</span></div>
+      <div class="stat-card"><b>100%</b><span>可先在瀏覽器處理</span></div>
+      <div class="stat-card"><b>SEO</b><span>每個工具獨立頁面</span></div>
+    </section>
+
+    <section id="tools" class="section">
+      <div class="section-title">
+        <div>
+          <h2>第一版工具清單</h2>
+          <p>先做一般人常用的文字、日期、名單工具。SQL、工程師工具先放後面。</p>
+        </div>
+      </div>
+
+      <div class="tools-grid">
+        <button class="tool-chip active" data-tool="social">
+          <span class="icon">📝</span>
+          <b>社群貼文整理</b>
+          <small>換行、分段、CTA、平台格式</small>
+        </button>
+        <button class="tool-chip" data-tool="counter">
+          <span class="icon">🔢</span>
+          <b>平台字數檢查</b>
+          <small>IG、Threads、LINE、LinkedIn</small>
+        </button>
+        <button class="tool-chip" data-tool="emoji">
+          <span class="icon">✨</span>
+          <b>Emoji 文案編輯</b>
+          <small>標題、分隔線、裝飾符號</small>
+        </button>
+        <button class="tool-chip" data-tool="date">
+          <span class="icon">📅</span>
+          <b>日期倒數</b>
+          <small>今天到某天還有幾天</small>
+        </button>
+        <button class="tool-chip" data-tool="mask">
+          <span class="icon">🛡️</span>
+          <b>個資遮罩</b>
+          <small>電話、Email、身分證遮罩</small>
+        </button>
+        <button class="tool-chip" data-tool="clean">
+          <span class="icon">🧹</span>
+          <b>貼上文字清理</b>
+          <small>去空白、去重、換行轉逗號</small>
+        </button>
+      </div>
+    </section>
+
+    <section id="workspace" class="section">
+      <div class="section-title">
+        <div>
+          <h2>互動原型</h2>
+          <p>這是單檔 HTML 版，先看產品感覺。正式版可以拆成每個工具獨立頁面。</p>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3 id="inputTitle">社群貼文整理器</h3>
+              <small id="inputHint">貼上原始文字，選平台與風格後整理。</small>
+            </div>
+            <button class="small-btn" id="sampleBtn">放入範例</button>
+          </div>
+          <div class="panel-body">
+            <div id="textToolArea">
+              <label for="sourceText">貼上原始文字</label>
+              <textarea id="sourceText" placeholder="例如：明天晚上八點直播 會分享新手如何開始做副業 歡迎大家來聽"></textarea>
+
+              <div class="form-row">
+                <div>
+                  <label for="platform">平台</label>
+                  <select id="platform">
+                    <option value="line">LINE / 社群公告</option>
+                    <option value="ig">Instagram</option>
+                    <option value="threads">Threads</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="x">X / Twitter</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="tone">風格</label>
+                  <select id="tone">
+                    <option value="clean">乾淨好讀</option>
+                    <option value="cute">可愛小編</option>
+                    <option value="premium">質感品牌</option>
+                    <option value="event">活動公告</option>
+                    <option value="pro">專業正式</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="quick-actions">
+                <button class="btn btn-primary" id="formatBtn">一鍵整理</button>
+                <button class="small-btn" id="cleanBtn">清理空白</button>
+                <button class="small-btn" id="emojiBtn">加 Emoji</button>
+                <button class="small-btn" id="lineToCommaBtn">換行轉逗號</button>
+                <button class="small-btn" id="dedupeBtn">名單去重</button>
+                <button class="small-btn" id="clearBtn">清空</button>
+              </div>
+            </div>
+
+            <div id="dateToolArea" class="hidden">
+              <div class="form-row">
+                <div>
+                  <label for="startDate">起始日期</label>
+                  <input type="date" id="startDate" />
+                </div>
+                <div>
+                  <label for="endDate">目標日期</label>
+                  <input type="date" id="endDate" />
+                </div>
+              </div>
+              <div class="quick-actions">
+                <button class="btn btn-primary" id="calcDateBtn">計算天數</button>
+                <button class="small-btn" id="yearEndBtn">套用今年最後一天</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>結果預覽</h3>
+              <small>正式版可加「一鍵複製」「下載 TXT」「產生平台版本」。</small>
+            </div>
+            <button class="small-btn" id="copyBtn">複製</button>
+          </div>
+          <div class="panel-body">
+            <div class="metric-grid">
+              <div class="metric"><b id="charCount">0</b><span>字元</span></div>
+              <div class="metric"><b id="lineCount">0</b><span>行數</span></div>
+              <div class="metric"><b id="emojiCount">0</b><span>Emoji</span></div>
+              <div class="metric"><b id="hashCount">0</b><span>Hashtag</span></div>
+            </div>
+            <label>平台長度參考</label>
+            <div class="limit-bar"><div class="limit-fill" id="limitFill"></div></div>
+            <p id="limitText" style="color: var(--muted); font-size: 13px; line-height: 1.7; margin: 8px 0 14px;">選擇平台後會顯示字數比例。</p>
+            <div id="result" class="result-box">結果會出現在這裡。</div>
+
+            <div class="ad-placeholder">
+              Google AdSense 廣告預留區<br>
+              建議正式版不要第一屏塞滿廣告，避免破壞工具體驗。
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <div>
+          <h2>常用模板入口</h2>
+          <p>這一塊可以做成「噴泉感」：不只是轉換，而是讓人想收藏、分享、回訪。</p>
+        </div>
+      </div>
+
+      <div class="templates">
+        <div class="template-card">
+          <b>📣 活動公告格式</b>
+          <p>活動時間、地點、報名方式、注意事項，一鍵變成 LINE 群組公告。</p>
+        </div>
+        <div class="template-card">
+          <b>🎁 限時優惠貼文</b>
+          <p>整理成 IG / Facebook 可用的促銷格式，包含 CTA 與 Hashtag。</p>
+        </div>
+        <div class="template-card">
+          <b>📆 倒數日文案</b>
+          <p>自動算出還有幾天，產生考試、活動、生日、專案倒數文案。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="seo" class="section">
+      <div class="section-title">
+        <div>
+          <h2>正式版 SEO 頁面概念</h2>
+          <p>每個工具都要獨立 URL，不要只塞在首頁。這裡只是原型展示。</p>
+        </div>
+      </div>
+
+      <div class="templates">
+        <div class="template-card">
+          <b>/social-post-formatter</b>
+          <p>社群貼文格式整理器：LINE、IG、Threads、Facebook 貼文排版。</p>
+        </div>
+        <div class="template-card">
+          <b>/days-until-date</b>
+          <p>今天到某一天還有幾天：日期倒數、活動倒數、考試倒數。</p>
+        </div>
+        <div class="template-card">
+          <b>/personal-info-masker</b>
+          <p>個資遮罩工具：電話、Email、身分證、名單批次遮罩。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="footer">
+      <p>貼上就轉 © Prototype｜這是 MVP 介面草稿，不上傳資料、不需要登入、先以瀏覽器端工具為主。</p>
+    </section>
+  </main>
+
+  <script>
+    const sourceText = document.getElementById('sourceText');
+    const result = document.getElementById('result');
+    const platform = document.getElementById('platform');
+    const tone = document.getElementById('tone');
+    const charCount = document.getElementById('charCount');
+    const lineCount = document.getElementById('lineCount');
+    const emojiCount = document.getElementById('emojiCount');
+    const hashCount = document.getElementById('hashCount');
+    const limitFill = document.getElementById('limitFill');
+    const limitText = document.getElementById('limitText');
+    const inputTitle = document.getElementById('inputTitle');
+    const inputHint = document.getElementById('inputHint');
+    const textToolArea = document.getElementById('textToolArea');
+    const dateToolArea = document.getElementById('dateToolArea');
+
+    const limits = {
+      line: 5000,
+      ig: 2200,
+      threads: 500,
+      facebook: 63206,
+      linkedin: 3000,
+      x: 280
+    };
+
+    const platformNames = {
+      line: 'LINE / 社群公告',
+      ig: 'Instagram',
+      threads: 'Threads',
+      facebook: 'Facebook',
+      linkedin: 'LinkedIn',
+      x: 'X / Twitter'
+    };
+
+    const samples = {
+      social: '明天晚上八點直播 會分享新手如何開始做副業 歡迎大家來聽 也可以留言問題 我會現場回答',
+      counter: '這是一段準備發到社群平台的貼文，我想檢查它的字數、行數、Emoji 數量和 Hashtag 數量。#小編工具 #貼文整理',
+      emoji: '新品上市 今天開始預購 數量有限 喜歡不要錯過',
+      mask: '王小明 0912345678 test@example.com A123456789\n陳小華 0987654321 hello@demo.com B223456789',
+      clean: '  王小明  \n\n陳小華\n王小明\n   林小美   \n\n',
+    };
+
+    function cleanWhitespace(text) {
+      return text
+        .replace(/\u00A0/g, ' ')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .split('\n')
+        .map(line => line.trim())
+        .join('\n')
+        .trim();
+    }
+
+    function addEmoji(text) {
+      const lines = cleanWhitespace(text).split(/\n|。|！|!|\./).map(x => x.trim()).filter(Boolean);
+      if (!lines.length) return '';
+      return lines.map((line, index) => {
+        if (index === 0) return `✨ ${line} ✨`;
+        if (line.includes('時間') || line.includes('明天') || line.includes('今天')) return `📌 ${line}`;
+        if (line.includes('歡迎') || line.includes('報名')) return `🙌 ${line}`;
+        return `➜ ${line}`;
+      }).join('\n');
+    }
+
+    function formatPost(text) {
+      const cleaned = cleanWhitespace(text);
+      if (!cleaned) return '請先貼上文字。';
+
+      const selectedTone = tone.value;
+      const selectedPlatform = platform.value;
+      let lines = cleaned
+        .replace(/([。！？!?.])\s*/g, '$1\n')
+        .split('\n')
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      if (lines.length === 1 && lines[0].length > 26) {
+        lines = lines[0].split(/\s+/).filter(Boolean);
+      }
+
+      let title = lines[0] || cleaned;
+      let body = lines.slice(1);
+
+      const tonePrefix = {
+        clean: '',
+        cute: '✨ ',
+        premium: '｜',
+        event: '📣 ',
+        pro: ''
+      };
+
+      const toneSuffix = {
+        clean: '',
+        cute: ' ✨',
+        premium: '｜',
+        event: '',
+        pro: ''
+      };
+
+      let output = `${tonePrefix[selectedTone]}${title}${toneSuffix[selectedTone]}`;
+
+      if (selectedTone === 'event') {
+        output += '\n\n活動重點：\n';
+        output += body.length ? body.map(x => `・${x}`).join('\n') : '・請補上活動資訊\n・請補上報名方式';
+        output += '\n\n有興趣的朋友，歡迎一起參加 🙌';
+      } else if (selectedTone === 'cute') {
+        output += '\n\n';
+        output += body.length ? body.map(x => `➜ ${x}`).join('\n') : '➜ 歡迎大家一起來看看';
+        output += '\n\n喜歡不要錯過～💛';
+      } else if (selectedTone === 'premium') {
+        output += '\n\n';
+        output += body.length ? body.join('\n\n') : cleaned;
+        output += '\n\n——\n把重要的事，整理成更好的樣子。';
+      } else if (selectedTone === 'pro') {
+        output += '\n\n';
+        output += body.length ? body.map(x => `- ${x}`).join('\n') : cleaned;
+        output += '\n\n如需了解更多資訊，歡迎留言或私訊。';
+      } else {
+        output += '\n\n';
+        output += body.length ? body.map(x => `・${x}`).join('\n') : cleaned;
+      }
+
+      if (selectedPlatform === 'ig') output += '\n\n#貼文整理 #小編工具 #內容創作';
+      if (selectedPlatform === 'threads') output = output.replace(/#貼文整理 #小編工具 #內容創作/g, '').trim();
+      if (selectedPlatform === 'line') output = output.replace(/#/g, '');
+
+      return output;
+    }
+
+    function maskInfo(text) {
+      return text
+        .replace(/([A-Z])[12]\d{7}(\d)/gi, (_, first, last) => `${first}********${last}`)
+        .replace(/09\d{2}[-\s]?\d{3}[-\s]?\d{3}/g, matched => {
+          const digits = matched.replace(/\D/g, '');
+          return `${digits.slice(0,4)}-***-${digits.slice(7)}`;
+        })
+        .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, email => {
+          const [name, domain] = email.split('@');
+          return `${name.slice(0,2)}***@${domain}`;
+        });
+    }
+
+    function dedupeLines(text) {
+      const seen = new Set();
+      return text.split('\n')
+        .map(x => x.trim())
+        .filter(Boolean)
+        .filter(x => {
+          if (seen.has(x)) return false;
+          seen.add(x);
+          return true;
+        })
+        .join('\n');
+    }
+
+    function updateMetrics(text) {
+      const chars = Array.from(text).length;
+      const lines = text ? text.split('\n').length : 0;
+      const emojis = (text.match(/\p{Extended_Pictographic}/gu) || []).length;
+      const hashes = (text.match(/#[\p{L}\p{N}_]+/gu) || []).length;
+      charCount.textContent = chars;
+      lineCount.textContent = lines;
+      emojiCount.textContent = emojis;
+      hashCount.textContent = hashes;
+
+      const limit = limits[platform.value] || 1000;
+      const percent = Math.min(100, Math.round(chars / limit * 100));
+      limitFill.style.width = percent + '%';
+      limitFill.style.background = chars > limit ? 'linear-gradient(90deg, #c65a45, #e78336)' : 'linear-gradient(90deg, #4f8f63, #f4b65f)';
+      limitText.textContent = `${platformNames[platform.value]} 參考上限：${limit.toLocaleString()} 字，目前使用 ${percent}%。${chars > limit ? ' 已超過，建議縮短。' : ''}`;
+    }
+
+    function setResult(text) {
+      result.textContent = text || '結果會出現在這裡。';
+      updateMetrics(text || '');
+    }
+
+    document.getElementById('formatBtn').addEventListener('click', () => setResult(formatPost(sourceText.value)));
+    document.getElementById('cleanBtn').addEventListener('click', () => setResult(cleanWhitespace(sourceText.value)));
+    document.getElementById('emojiBtn').addEventListener('click', () => setResult(addEmoji(sourceText.value)));
+    document.getElementById('lineToCommaBtn').addEventListener('click', () => setResult(cleanWhitespace(sourceText.value).split('\n').filter(Boolean).join('、')));
+    document.getElementById('dedupeBtn').addEventListener('click', () => setResult(dedupeLines(sourceText.value)));
+    document.getElementById('clearBtn').addEventListener('click', () => { sourceText.value = ''; setResult(''); });
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const text = result.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        document.getElementById('copyBtn').textContent = '已複製';
+        setTimeout(() => document.getElementById('copyBtn').textContent = '複製', 1200);
+      } catch (e) {
+        alert('瀏覽器不支援自動複製，請手動選取結果。');
+      }
+    });
+
+    document.getElementById('sampleBtn').addEventListener('click', () => {
+      const active = document.querySelector('.tool-chip.active')?.dataset.tool || 'social';
+      if (active === 'date') {
+        const now = new Date();
+        const future = new Date(now.getFullYear(), 11, 31);
+        document.getElementById('startDate').valueAsDate = now;
+        document.getElementById('endDate').valueAsDate = future;
+        return;
+      }
+      sourceText.value = samples[active] || samples.social;
+      setResult(formatPost(sourceText.value));
+    });
+
+    platform.addEventListener('change', () => updateMetrics(result.textContent || ''));
+    sourceText.addEventListener('input', () => updateMetrics(sourceText.value));
+
+    document.querySelectorAll('.tool-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tool-chip').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+
+        const tool = btn.dataset.tool;
+        textToolArea.classList.toggle('hidden', tool === 'date');
+        dateToolArea.classList.toggle('hidden', tool !== 'date');
+
+        const titles = {
+          social: ['社群貼文整理器', '貼上原始文字，選平台與風格後整理。'],
+          counter: ['平台字數檢查器', '即時檢查字數、行數、Emoji 與 Hashtag。'],
+          emoji: ['Emoji 文案編輯器', '替文字加上標題、emoji、分隔線與裝飾符號。'],
+          date: ['日期倒數計算器', '計算今天到某一天還有幾天。'],
+          mask: ['個資遮罩工具', '批次遮罩手機、Email 與身分證格式。'],
+          clean: ['貼上文字清理器', '去除多餘空白、空行、重複名單與格式雜訊。']
+        };
+
+        inputTitle.textContent = titles[tool][0];
+        inputHint.textContent = titles[tool][1];
+
+        if (tool === 'mask') {
+          sourceText.value = samples.mask;
+          setResult(maskInfo(sourceText.value));
+        } else if (tool === 'clean') {
+          sourceText.value = samples.clean;
+          setResult(cleanWhitespace(dedupeLines(sourceText.value)));
+        } else if (tool === 'emoji') {
+          sourceText.value = samples.emoji;
+          setResult(addEmoji(sourceText.value));
+        } else if (tool === 'counter') {
+          sourceText.value = samples.counter;
+          setResult(sourceText.value);
+        } else if (tool === 'date') {
+          const now = new Date();
+          const future = new Date(now.getFullYear(), 11, 31);
+          document.getElementById('startDate').valueAsDate = now;
+          document.getElementById('endDate').valueAsDate = future;
+          calcDate();
+        } else {
+          sourceText.value = samples.social;
+          setResult(formatPost(sourceText.value));
+        }
+      });
+    });
+
+    function calcDate() {
+      const s = document.getElementById('startDate').value;
+      const e = document.getElementById('endDate').value;
+      if (!s || !e) {
+        setResult('請選擇起始日期與目標日期。');
+        return;
+      }
+      const start = new Date(s + 'T00:00:00');
+      const end = new Date(e + 'T00:00:00');
+      const diff = Math.round((end - start) / 86400000);
+      const abs = Math.abs(diff);
+      const weeks = Math.floor(abs / 7);
+      const days = abs % 7;
+      const direction = diff >= 0 ? '還有' : '已經過了';
+
+      setResult(`距離 ${e} ${direction} ${abs} 天\n也就是 ${weeks} 週又 ${days} 天\n\n可複製文案：\n距離目標日只剩 ${abs} 天，現在開始還不晚。`);
+    }
+
+    document.getElementById('calcDateBtn').addEventListener('click', calcDate);
+    document.getElementById('yearEndBtn').addEventListener('click', () => {
+      const now = new Date();
+      document.getElementById('startDate').valueAsDate = now;
+      document.getElementById('endDate').valueAsDate = new Date(now.getFullYear(), 11, 31);
+      calcDate();
+    });
+
+    sourceText.value = samples.social;
+    setResult(formatPost(sourceText.value));
+  </script>
+</body>
+</html>
