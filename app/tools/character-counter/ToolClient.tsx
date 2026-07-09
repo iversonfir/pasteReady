@@ -59,17 +59,17 @@ export default function ToolClient() {
             return (
               <div
                 key={rule.id}
-                className={`flex items-center justify-between rounded-2xl border p-3 text-sm ${
+                className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-2xl border p-3 text-sm ${
                   over
                     ? "border-red-300 bg-red-50 text-red-700"
                     : "border-[var(--line)] bg-white text-[var(--ink)]"
                 }`}
               >
-                <div>
+                <div className="min-w-0">
                   <span className="font-bold">{rule.name}</span>
                   <span className="text-xs text-[var(--muted)] ml-2">{rule.note}</span>
                 </div>
-                <span className="font-mono">
+                <span className="font-mono shrink-0">
                   {stats.charCount}/{rule.limit}
                   {over ? "（超過上限）" : ""}
                 </span>
