@@ -7,7 +7,7 @@ import Workspace from "@/components/Workspace";
  */
 export default function Home() {
   return (
-    <main className="mx-auto max-w-5xl px-4 py-16 flex flex-col gap-10">
+    <main className="w-full mx-auto max-w-5xl px-4 py-16 flex flex-col gap-10">
       <header className="text-center flex flex-col gap-3">
         <h1 className="text-3xl font-bold">貼上就轉</h1>
         <p className="text-[var(--muted)]">

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
  */
 export default function CharacterCounterPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 flex flex-col gap-8">
+    <main className="w-full mx-auto max-w-3xl px-4 py-10 flex flex-col gap-8">
       <header>
         <h1 className="text-2xl font-bold">平台字數檢查器</h1>
         <p className="mt-2 text-[var(--muted)]">

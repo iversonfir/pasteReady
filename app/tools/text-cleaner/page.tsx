@@ -16,7 +16,7 @@ export const metadata: Metadata = {
  */
 export default function TextCleanerPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 flex flex-col gap-8">
+    <main className="w-full mx-auto max-w-3xl px-4 py-10 flex flex-col gap-8">
       <header>
         <h1 className="text-2xl font-bold">貼上文字清理器</h1>
         <p className="mt-2 text-[var(--muted)]">
