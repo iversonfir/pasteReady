@@ -32,7 +32,7 @@ export default function Workspace() {
   const activeTool = TOOLS.find((tool) => tool.id === activeId) ?? TOOLS[0];
 
   return (
-    <div className="grid gap-4 md:grid-cols-[280px_1fr] items-start">
+    <div className="grid gap-4 md:grid-cols-[280px_minmax(0,1fr)] items-start">
       <nav className="flex flex-col gap-2 rounded-[28px] border border-[var(--line)] bg-[rgba(255,253,248,0.9)] p-3 shadow-[0_22px_60px_rgba(82,52,24,0.13)]">
         {TOOLS.map((tool) => (
           <button
@@ -57,14 +57,14 @@ export default function Workspace() {
         ))}
       </nav>
 
-      <section className="rounded-[28px] border border-[var(--line)] bg-[rgba(255,253,248,0.9)] shadow-[0_22px_60px_rgba(82,52,24,0.13)] overflow-hidden">
+      <section className="w-full min-w-0 rounded-[28px] border border-[var(--line)] bg-[rgba(255,253,248,0.9)] shadow-[0_22px_60px_rgba(82,52,24,0.13)] overflow-hidden">
         <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] bg-[rgba(255,250,241,0.8)] px-5 py-4">
-          <div>
+          <div className="min-w-0">
             <h2 className="text-lg font-bold">{activeTool.name}</h2>
             <p className="text-sm text-[var(--muted)]">{activeTool.description}</p>
           </div>
         </div>
-        <div className="p-5 min-h-[640px]">
+        <div className="p-5 min-h-[640px] min-w-0">
           {activeTool.available && TOOL_CLIENTS[activeTool.id] ? (
             (() => {
               const ActiveClient = TOOL_CLIENTS[activeTool.id];
